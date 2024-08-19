@@ -141,36 +141,3 @@ class FieldElementTest(TestCase):
         a = FieldElement(4, 31)
         b = FieldElement(11, 31)
         self.assertEqual(a**-4 * b, FieldElement(13, 31))
-
-
-# 타원곡선: y^2 = x^3 + ax + b
-# - x축 대칭 + 제곱이기 때문에 완만한 형태의 그래프 (y를 구하기 위해 sqrt하면 완만해짐)
-# - 비트코인에서 사용되는 타원곡선은 secp256k1: y^2 = x^3 + 7 (a=0, b=7)
-
-
-# 타원곡선 위에 있는 한 점 정의
-class Point:
-    def __init__(self, x, y, a, b) -> None:
-        self.a = a
-        self.b = b
-        self.x = x
-        self.y = y
-
-        # (x, y)가 타원 곡선 위에 있는지 확인
-        if self.y**2 != self.x**3 + a * x + b:
-            raise ValueError(f"({x}, {y}) is not on the curve")
-
-    # == 연산자
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, Point):
-            return False
-        return (
-            self.x == other.x
-            and self.y == other.y
-            and self.a == other.a
-            and self.b == other.b
-        )
-
-    # != 연산자
-    def __ne__(self, other: object) -> bool:
-        return not (self == other)
