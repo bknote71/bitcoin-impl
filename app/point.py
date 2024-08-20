@@ -26,7 +26,7 @@
 # 항등원 더하기: 무한원점(0) = None값
 # 역원 더하기(-y):  == 0
 from __future__ import annotations
-from typing import TypeVar, Type, cast
+from typing import TypeVar, cast
 from unittest import TestCase
 
 

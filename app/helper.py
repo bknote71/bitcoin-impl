@@ -1,7 +1,6 @@
 import hashlib
-from re import A
-from sys import prefix
 from unittest import TestSuite, TextTestRunner
+import io
 
 BASE58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
 
@@ -63,3 +62,36 @@ def little_endian_to_int(b):
 
 def int_to_little_endian(n: int, length):
     return n.to_bytes(length, byteorder="little")
+
+
+# 가변 정수(varints)
+# - 정수를 가변 바이트로 표현
+# - 접두사에 정수 클래스(범위를 나타내는 클래스) 기록
+
+varint_class = {
+    0xFD: 2,
+    0xFE: 4,
+    0xFF: 8,
+}
+
+
+def read_varint(s: io.BytesIO):
+    # 접두사 확인(1바이트)
+    i = s.read(1)[0]
+    if i in varint_class:
+        return little_endian_to_int(s.read(varint_class[i]))
+    else:
+        return i
+
+
+def encode_varint(i):
+    if i < 0xFD:
+        return bytes([i])
+    elif i < 0x10000:
+        return b"\xfd" + int_to_little_endian(i, 2)
+    elif i < 0x100000000:
+        return b"\xfe" + int_to_little_endian(i, 4)
+    elif i < 0x10000000000000000:
+        return b"\xff" + int_to_little_endian(i, 8)
+    else:
+        raise ValueError("integer too large: {}".format(i))
