@@ -72,6 +72,10 @@ class Signature:
         result += bytes([0x02, len(rbin)]) + sbin
         return bytes([0x30, len(result)]) + result
 
+    @classmethod
+    def parse(cls, s) -> "Signature":
+        return Signature(None, None)
+
 
 # 위수 N
 class S256Point(Point):
@@ -127,7 +131,7 @@ class S256Point(Point):
 
     # sec 포멧 역직렬화
     @classmethod
-    def parse(self, sec_bin: bytes):
+    def parse(cls, sec_bin: bytes):
         if sec_bin[0] == 4:  # 0x04(비압축)
             x = int.from_bytes(sec_bin[1:33], "big")
             y = int.from_bytes(sec_bin[33:65], "big")
@@ -146,7 +150,7 @@ class S256Point(Point):
             even_beta = beta
 
         if is_even:
-            return S256Field(x, even_beta)
+            return S256Point(x, even_beta)
         else:
             return S256Point(x, odd_beta)
 
