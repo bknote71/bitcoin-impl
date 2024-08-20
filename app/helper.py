@@ -2,6 +2,7 @@ import hashlib
 from unittest import TestSuite, TextTestRunner
 import io
 
+SIGHASH_ALL = 1
 BASE58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
 
 

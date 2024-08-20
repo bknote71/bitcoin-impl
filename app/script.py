@@ -24,6 +24,9 @@ from logging import Logger
 # - '공개키로 서명이 올바른지 확인'
 # - 올바르면 1, 올바르지 않으면 0
 
+# (중요: 해제 스크립트 명령어는 잠금 스크립트 명령어 위에 위치하여 먼저 실행되게 된다.)
+# - 해제 + 잠금 순서
+
 from app.helper import (
     encode_varint,
     int_to_little_endian,
@@ -46,7 +49,7 @@ class Script:
     # 금고(ScriptPubKey)와 열쇠(ScriptSig)는 서로 다른 트랜잭션에 있다.
     # 금고는 비트코인을 받았던 트랜잭션에 있고, 열쇠는 비트코인을 소비하는 트랜잭션에 있다.
     # 해제 스클비트는 잠금 스크립트로 잠긴 코인을 해제하기 때문에 2 개의 스크립트를 하나로 만드는 방법이 필요하다.
-    # 즉 둘을 하나로 실행시킨다. (해제 스클비트 명령어는 잠금 스크립트 명령어 위에 위치하여 먼저 실행되게 된다.)
+    # 즉 둘을 하나로 실행시킨다. (중요: 해제 스크립트 명령어는 잠금 스크립트 명령어 위에 위치하여 먼저 실행되게 된다.)
     def __add__(self, other: "Script"):
         return Script(self.cmds + other.cmds)
 
@@ -147,3 +150,9 @@ class Script:
         if stack.pop() == b"":
             return False
         return True
+
+
+def p2pkh_script(h160):
+    """Takes a hash160 and returns the p2pkh ScriptPubKey"""
+    # OP_DUP, OP_HASH160, 20byte pubkey' hash, OP_EQUALVERIFY, OP_CHECKSIG
+    return Script([0x76, 0xA9, h160, 0x88, 0xAC])
